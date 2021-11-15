@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { ICurrentWeather } from '../icurrent-weather';
 import { WeatherService } from '../weather.service';
 
@@ -7,17 +8,16 @@ import { WeatherService } from '../weather.service';
   templateUrl: './current-weather.component.html',
   styleUrls: ['./current-weather.component.scss']
 })
-export class CurrentWeatherComponent implements OnInit {
+export class CurrentWeatherComponent implements OnInit,OnDestroy {
 
-  currentWeather!: ICurrentWeather;
-
+  currentWeather$: Observable<ICurrentWeather>;
   constructor(private weatherService:WeatherService) {
+    this.currentWeather$=this.weatherService.currentWeather$;
    }
+  ngOnDestroy(): void {
+  }
 
   ngOnInit(): void {
-    this.weatherService.getCurrentWeather("rawalpindi").subscribe(res=>{
-      this.currentWeather=res;
-    })
   }
 
 }

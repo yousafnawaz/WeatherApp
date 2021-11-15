@@ -3,5 +3,8 @@
         <mat-label>City Name</mat-label>
         <input matInput [formControl]="search"/>
         <mat-icon matPrefix>search</mat-icon>
+        <mat-error *ngIf="search.invalid">
+            Type more than one character to search
+          </mat-error>
       </mat-form-field>
 </form>

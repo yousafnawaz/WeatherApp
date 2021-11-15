@@ -1,10 +1,15 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { ICurrentWeather } from './icurrent-weather';
 
+export interface IWeatherService{
+  readonly currentWeather$: BehaviorSubject<ICurrentWeather> 
+  getCurrentWeather(city:string):Observable<ICurrentWeather>
+  updateCurrentWeather(city:string):void
+}
 interface ICurrentWeatherData { 
   weather: [{
     description: string,
@@ -24,8 +29,17 @@ interface ICurrentWeatherData {
 @Injectable({
   providedIn: 'root'
 })
-export class WeatherService {
-
+export class WeatherService implements IWeatherService{
+  readonly currentWeather$:BehaviorSubject<ICurrentWeather>=new BehaviorSubject<ICurrentWeather>(
+    {
+      city:'',
+      country:'',
+      date:Date.now(),
+      image:'',
+      temperature:0,
+      description:''
+    }
+  )
   constructor(private httpClient:HttpClient) { }
 
   getCurrentWeather(city:string):Observable<ICurrentWeather>{
@@ -37,13 +51,18 @@ export class WeatherService {
        this.transformWeatherData(data)
     ));
   }
+  updateCurrentWeather(city:string):void{
+    this.getCurrentWeather(city).subscribe(weather=>{
+      this.currentWeather$.next(weather)
+    })
+  }
 
   private transformWeatherData(data:ICurrentWeatherData):ICurrentWeather{
     return {
       city:data.name,
       country:data.sys.country,
       date:data.dt*1000,
-      image:`http://openweathermap.org/img/w/${data.weather[0].icon}.png`,
+      image:`http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`,
       temperature:this.convertKelvinToFahrenheit(data.main.temp),
       description:data.weather[0].description
     };

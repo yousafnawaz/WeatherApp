@@ -1,11 +1,11 @@
-<div *ngIf="currentWeather">
+<div *ngIf="currentWeather$ | async as currentWeather">
     <div fxLayout="row">
         <div fxFlex="60%" class="mat-title no-margin">{{currentWeather?.city}}, {{currentWeather?.country}}</div>
         <div fxFlex class="right mat-h3 no-margin">{{currentWeather?.date|date:'EEEE MMM d'}}</div>
     </div>
     <div fxLayout="row" fxLayoutAlign="center center">
         <div fxFlex="50%">
-            <img style="zoom: 175%" [src]="currentWeather.image" />
+            <img [src]="currentWeather.image" />
         </div>
         <div fxFlex class="right mat-display-3 no-margin">
             {{currentWeather?.temperature|number:'1.0-0'}}
@@ -15,7 +15,4 @@
     <div fxLayout="row" fxLayoutAlign="center">
         {{currentWeather?.description}}
     </div>
-</div>
-<div *ngIf="!currentWeather">
-    no data
 </div>
